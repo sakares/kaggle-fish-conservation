@@ -17,7 +17,7 @@ def tf_predict(image_path):
         in tf.gfile.GFile("retrained_labels.txt")]
 
     # Unpersists graph from file
-    with tf.gfile.FastGFile("epoch500/retrained_graph.pb", 'rb') as f:
+    with tf.gfile.FastGFile("epoch10000/retrained_graph.pb", 'rb') as f:
         graph_def = tf.GraphDef()
         graph_def.ParseFromString(f.read())
         _ = tf.import_graph_def(graph_def, name='')
@@ -73,36 +73,31 @@ def process_file(content_list, continue_idx):
         #bucket = image.split('.')
         #image_id = bucket[0]
         
-        filename = 'result/epoch400/%s_*' % image
-        if len(glob(filename)) == 0:
-            print('predicting fish probability list from ' + checking_image)
-            start = time.time()
-            result = tf_predict(checking_image)
-            end = time.time()
-            time_usage = end - start
-            print(time_usage)
-            print('sample: %s' % (idx))
-            # print(result)
+        print('predicting fish probability list from ' + checking_image)
+        start = time.time()
+        result = tf_predict(checking_image)
+        end = time.time()
+        time_usage = end - start
+        print(time_usage)
+        print('sample: %s' % (idx))
+        # print(result)
 
-            # bashCommand = "echo \"%s\" >> result/epoch400/result.txt" % (result)
-            # process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-            # output, error = process.communicate()
+        # bashCommand = "echo \"%s\" >> result/epoch10k/result.txt" % (result)
+        # process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+        # output, error = process.communicate()
 
-            text_file = open("result/epoch400/result.txt", "a")
-            text_file.write('%s\n' % result)
-            text_file.close()
+        text_file = open("result/epoch10k/result.txt", "a")
+        text_file.write('%s\n' % result)
+        text_file.close()
 
-            idx = idx + 1
-            print('processed_count = %s' % processed_count)
-            processed_count = processed_count + 1
-        else:
-            print('found prediction. We skip')
-            idx = idx + 1
+        idx = idx + 1
+        print('processed_count = %s' % processed_count)
+        processed_count = processed_count + 1
 
     # csv_writer(id_list,label_list)
 
 def last_processed_file(content_list):
-    bc = 'll="$(wc -l result/epoch400/result.txt)"; echo $ll'
+    bc = 'll="$(wc -l result/epoch10k/result.txt)"; echo $ll'
     process = subprocess.Popen(bc, stdout=subprocess.PIPE, shell=True)
     output, error = process.communicate()
     last_idx =  int(output.split()[0]) - 1
