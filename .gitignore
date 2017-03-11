@@ -1,0 +1,6 @@
+.DS_Store
+data
+retrained_graph.pb
+retrain_logs
+inception
+epoch*
